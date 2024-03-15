@@ -65,11 +65,18 @@ print("")
 
 
 users = graph.create_vertex_collection("users")
+posts = graph.create_vertex_collection("posts")
 
 edges = graph.create_edge_definition(
     edge_collection="friendship",
     from_vertex_collections=["users"],
     to_vertex_collections=["users"]
+)
+
+postEdges = graph.create_edge_definition(
+    edge_collection="post",
+    from_vertex_collections=["users"],
+    to_vertex_collections=["posts"]
 )
 
 users.delete({"_key": "01"})
@@ -112,3 +119,38 @@ friends = sys_db.aql.execute(aql_query, bind_vars={"inVertex": "users/01"})
 for friend in friends:
     print(friend)
 
+##########################
+print("")
+##########################
+
+posts.delete({"_key": "01"})
+posts.insert({"_key": "01", "content": "This is a post 1 content", "createdAt": "2014-05-07T14:19:09.522Z"})
+
+posts.delete({"_key": "02"})
+posts.insert({"_key": "02", "content": "This is a post 2 content", "createdAt": "2014-05-06T14:19:09.522Z"})
+
+posts.delete({"_key": "03"})
+posts.insert({"_key": "03", "content": "This is a post 3 content", "createdAt": "2014-05-08T14:19:09.522Z"})
+
+posts.delete({"_key": "04"})
+posts.insert({"_key": "04", "content": "This is a post 4 content", "createdAt": "2014-05-17T14:19:09.522Z"})
+
+postEdges.insert({"_from": "users/02", "_to": "posts/01"})
+postEdges.insert({"_from": "users/02", "_to": "posts/02"})
+postEdges.insert({"_from": "users/02", "_to": "posts/03"})
+postEdges.insert({"_from": "users/06", "_to": "posts/03"})
+
+
+aql_query = """
+    WITH users, posts
+    FOR v, e, p IN 1..1 ANY @outVertex friendship
+        FILTER e.status == "1"
+        FOR post IN 1..1 OUTBOUND v post
+        SORT post.createdAt DESC
+        RETURN post
+"""
+
+posts = sys_db.aql.execute(aql_query, bind_vars={"outVertex": "users/01"})
+
+for post in posts:
+    print(post)
