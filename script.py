@@ -1,3 +1,19 @@
+# Γίνεται deploy πάντα ενας cluster με 3 nodes.
+
+# Το OneShard cluster θα χρησιμοποιεί έναν node για read write και θα κάνει replication στους 
+# άλλους 2 nodes.
+
+# Στο Multi Shard χρησιμοποιεί όλους τους node για read write και κάνει replication όλοι σε όλους τους 
+# nodes.
+
+# Το Replication Factor σημαίνει το πόσα copies των δεδομένων σε πόσους nodes θα βρίσκονται.
+# Σε ενα cluster με 3 nodes τότε το Replication Factor ειναι 3 που σημαίνει ότι απο του 3 nodes
+# ο ένας είναι ο leader και οι άλλοι 2 είναι οι follower nodes.
+
+# Το write concern αφορά σε πόσους τουλάχιστον followers θα πρέπει να γίνει replication τα δεδομένα
+# για να θεωρηθεί το write επιβεβαιωμένο.
+
+
 # Get the connection from the ArangoDB admin panel
 
 sys_db.delete_graph("school")
